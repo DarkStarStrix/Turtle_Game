@@ -1,85 +1,39 @@
-from turtle import Turtle, Screen
-import random
+import time
+from turtle import Screen
+from player import Player
+from car_manager import CarManager
+from scoreboard import Scoreboard
 
-timmy = Turtle()
 screen = Screen()
+screen.setup(width=600, height=600)
+screen.tracer(0)
 
-# # turtle race game between 4 turtles
-#
-# screen.setup(width=500, height=400)
-# user_bot = screen.textinput(title="make your bet", prompt="which turtle will win the race ? Enter a color: ")
-#
-# timmy.shape("turtle")
-# timmy.color("red")
-# timmy.penup()
-# timmy.goto(x=-230, y=-100)
-#
-# Johnny = Turtle()
-# Johnny.shape("turtle")
-# Johnny.color("blue")
-# Johnny.penup()
-# Johnny.goto(x=-230, y=-70)
-#
-# Sally = Turtle()
-# Sally.shape("turtle")
-# Sally.color("green")
-# Sally.penup()
-# Sally.goto(x=-230, y=-40)
-#
-# Billy = Turtle()
-# Billy.shape("turtle")
-# Billy.color("yellow")
-# Billy.penup()
-# Billy.goto(x=-230, y=-10)
-#
-# if timmy.xcor() > 230:
-#     print("red wins")
-#
-# if Johnny.xcor() > 230:
-#     print("blue wins")
-#
-# if Sally.xcor() > 230:
-#     print("green wins")
-#
-# if Billy.xcor() > 230:
-#     print("yellow wins")
-#
-# while timmy.xcor() < 230 and Johnny.xcor() < 230 and Sally.xcor() < 230 and Billy.xcor() < 230:
-#     timmy.forward(random.randint(0, 10))
-#     Johnny.forward(random.randint(0, 10))
-#     Sally.forward(random.randint(0, 10))
-#     Billy.forward(random.randint(0, 10))
+player = Player()
+car_manager = CarManager()
+scoreboard = Scoreboard()
 
+screen.listen()
+screen.onkey(player.go_up, "Up")
 
-# # Etch a sketch
-# def move_forwards():
-#     timmy.forward(10)
-#
-#
-# def move_backwards():
-#     timmy.backward(10)
-#
-#
-# def turn_left():
-#     timmy.left(10)
-#
-#
-# def turn_right():
-#     timmy.right(10)
-#
-#
-# def clear():
-#     timmy.clear()
-#     timmy.penup()
-#     timmy.home()
-#     timmy.pendown()
-#
-#
-# screen.listen()
-# screen.onkey(key="w", fun=move_forwards)
-# screen.onkey(key="s", fun=move_backwards)
-# screen.onkey(key="a", fun=turn_left)
-# screen.onkey(key="d", fun=turn_right)
-# screen.onkey(key="c", fun=clear)
+game_is_on = True
+while game_is_on:
+    time.sleep(0.1)
+    screen.update()
+
+    car_manager.create_car()
+    car_manager.move_cars()
+
+    #Detect collision with car
+    for car in car_manager.all_cars:
+        if car.distance(player) < 20:
+            game_is_on = False
+            scoreboard.game_over()
+
+    #Detect successful crossing
+    if player.is_at_finish_line():
+        player.go_to_start()
+        car_manager.level_up()
+        scoreboard.increase_level()
+
 
 screen.exitonclick()
